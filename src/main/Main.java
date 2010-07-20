@@ -29,8 +29,10 @@ public class Main
 				String[] elements = str.split(" ");
 				for (int j = 0; j < elements.length; j++)
 				{
-					if (j != 0 && j != 3)
-						data[i][j-1] = Double.parseDouble(elements[j]);
+					if (j == 1)
+						data[i][0] = Double.parseDouble(elements[j]);
+					if (j == 2)
+						data[i][1] = Double.parseDouble(elements[j]);
 				}
 			}
 			in.close();
@@ -42,7 +44,7 @@ public class Main
 
 		//System.out.println(MathUtils.showMatrix(data));
 
-		KMeans cluster = new KMeans(5, data);
+		KMeans cluster = new KMeans(6, data);
 
 		System.out.println(MathUtils.showMatrix(cluster.getMeans()));
 		System.out.println(MathUtils.showVector(cluster.getAssignments()));
