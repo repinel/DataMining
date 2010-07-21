@@ -30,6 +30,9 @@ public class Main
 	private static final int[] ITEM_IDS = {207, 97, 524, 268, 422, 172, 508, 78, 426, 497};
 	private static final int[] ITEM_RATTINGS = {2, 5, 4, 3, 2, 1, 2, 4, 4, 4};
 
+	private static int recomendationCount = 0;
+	private static int recomendationErrorCount = 0;
+
 	public static void main(String s[])
 	{
 		int maxUserId = 0;
@@ -194,11 +197,16 @@ public class Main
 			recomendationForUser(i, itemIds, itemRatting, counter, evaluations, cAssignment, out);
 		}
 
+		NumberFormat nf = new DecimalFormat("#0.00");
+
 		out.write(" -- STATISTICS --");
 		out.write("\n");
-		out.write("\t Item\t Avg\t Var\t\n");
+		
+		double per = Double.valueOf(recomendationErrorCount) / Double.valueOf(recomendationCount) * 100;
 
-		NumberFormat nf = new DecimalFormat("#0.00");
+		out.write("Good recomendation: " + nf.format(per) + "%\n");
+		out.write("\n");
+		out.write("\t Item\t Avg\t Var\t\n");
 
 		for (int i = 0; i < itemGuessMean.length; i++)
 		{
@@ -286,6 +294,14 @@ public class Main
 			}
 
 			guessError[i] = itemRatting[i] - itemGuessMean[i];
+
+
+			// error statistics
+			recomendationCount++;
+			
+			if (guessError[i] >= -1 && guessError[i] <= 1)
+				recomendationErrorCount++;
+
 
 			StringBuffer sb = new StringBuffer();
 
