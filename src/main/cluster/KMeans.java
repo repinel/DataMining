@@ -11,8 +11,10 @@ import main.math.MathUtils;
 
 public class KMeans
 {
+	public static final int NO_VALUE = 0;
+
 	/** Maximum number of iterations */
-	public static final int MAXITERS = 100;
+	public static final int MAXITERS = 10000;
 
 	/** the number of clusters */
 	private int K;
@@ -92,7 +94,10 @@ public class KMeans
 				{
 					count[member - 1]++;
 					for (int v = 0; v < d; v++)
-						mu[member - 1][v] += data[j][v];
+					{
+						if (data[j][v] > KMeans.NO_VALUE)
+							mu[member - 1][v] += data[j][v];
+					}
 				}
 			}
 			for (int i = 0; i < K; i++)
@@ -114,7 +119,10 @@ public class KMeans
 				{
 					dist[i] = 0.;
 					for (int v = 0; v < d; v++)
-						dist[i] += (data[j][v] - mu[i][v]) * (data[j][v] - mu[i][v]);
+					{
+						if (data[j][v] > KMeans.NO_VALUE)
+							dist[i] += (data[j][v] - mu[i][v]) * (data[j][v] - mu[i][v]);
+					}
 				}
 
 				// min
