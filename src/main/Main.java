@@ -9,6 +9,8 @@ import main.math.MathUtils;
 
 public class Main
 {
+	private static final String FILE_NAME = "data/data.base";
+
 	private static final int COL_USER_ID = 0;
 	private static final int COL_ITEM_ID = 1;
 	private static final int COL_RATTING = 2;
@@ -20,7 +22,7 @@ public class Main
 
 		try
 		{
-			BufferedReader in = new BufferedReader(new FileReader("data/simulacao_teste.base"));
+			BufferedReader in = new BufferedReader(new FileReader(FILE_NAME));
 
 			for (int i = 0; in.ready(); i++)
 			{
@@ -51,7 +53,7 @@ public class Main
 */
 		try
 		{
-			BufferedReader in = new BufferedReader(new FileReader("data/simulacao_teste.base"));
+			BufferedReader in = new BufferedReader(new FileReader(FILE_NAME));
 
 			while (in.ready())
 			{
@@ -59,6 +61,8 @@ public class Main
 
 				int userId = Integer.parseInt(elements[COL_USER_ID]) - 1;
 				int itemId = Integer.parseInt(elements[COL_ITEM_ID]) - 1;
+
+				//System.out.println("userId: " + userId + " | itemId: " + itemId);
 
 				avaliacoes[userId][itemId] = Double.parseDouble(elements[COL_RATTING]);
 			}
@@ -70,39 +74,36 @@ public class Main
 			e.printStackTrace();
 		}
 
-		double[][] data = new double[maxUserId][maxUserId];
+		double[][] distance = new double[maxUserId][maxUserId];
 
 		for (int i = 0; i < maxUserId; i++)
 		{
-			for (int j = 0; j < maxUserId; j++)
+			for (int j = i + 1; j < maxUserId; j++)
 			{
-				if (i != j)
-				{
-					int count = 0;
+				int count = 0;
 
-					for (int filme = 0; filme < maxItemId; filme++)
+				for (int filme = 0; filme < maxItemId; filme++)
+				{
+					if (avaliacoes[i][filme] != KMeans.NO_VALUE && avaliacoes[j][filme] != KMeans.NO_VALUE)
 					{
-						if (avaliacoes[i][filme] == KMeans.NO_VALUE && avaliacoes[j][filme] == KMeans.NO_VALUE)
-							continue;
-						else if (avaliacoes[i][filme] == KMeans.NO_VALUE)
-							data[i][j] += avaliacoes[j][filme];
-						else if (avaliacoes[j][filme] == KMeans.NO_VALUE)
-							data[i][j] += avaliacoes[i][filme];
-						else
-							data[i][j] = (avaliacoes[i][filme] + avaliacoes[j][filme]) / 2;
+						distance[i][j] += (avaliacoes[i][filme] + avaliacoes[j][filme]) / 2;
 
 						count++;
 					}
-
-					if (count > 0)
-						data[i][j] /= count;
 				}
+
+				if (count > 0)
+				{
+					distance[i][j] /= count;
+				}
+
+				distance[j][i] = distance[i][j];
 			}
 		}
 
-		//System.out.println(MathUtils.showMatrix(data));
+		//System.out.println(MathUtils.showMatrix(distance));
 
-		KMeans cluster = new KMeans(5, avaliacoes);
+		KMeans cluster = new KMeans(3, avaliacoes, distance);
 
 		System.out.println(MathUtils.showMatrix(cluster.getMeans()));
 		System.out.println(MathUtils.showVector(cluster.getAssignments()));

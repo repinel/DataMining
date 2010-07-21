@@ -25,14 +25,19 @@ public class KMeans
 	/** the cluster centers */
 	private double[][] mu;
 
-	public KMeans(int k, double[][] data)
+	/** distance matrix **/
+	double[][] distance;
+
+	public KMeans(int k, double[][] data, double[][] distance)
 	{
-		this(k, data, null);
+		this(k, data, distance, null);
 	}
 
-	public KMeans(int k, double[][] data, int[] initialAssignment)
+	public KMeans(int k, double[][] data, double[][] distance, int[] initialAssignment)
 	{
 		this.K = k;
+		this.distance = distance;
+
 		int n = data.length;
 		int d = data[0].length;
 		mu = new double[k][d];
