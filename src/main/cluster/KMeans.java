@@ -12,9 +12,10 @@ import main.math.MathUtils;
 public class KMeans
 {
 	public static final int NO_VALUE = 0;
+	public static final int IGNORE_DISTANCE = -1;
 
 	/** Maximum number of iterations */
-	public static final int MAXITERS = 10000;
+	public static final int MAXITERS = 1000;
 
 	/** the number of clusters */
 	private int K;
@@ -25,18 +26,14 @@ public class KMeans
 	/** the cluster centers */
 	private double[][] mu;
 
-	/** distance matrix **/
-	double[][] distance;
-
-	public KMeans(int k, double[][] data, double[][] distance)
+	public KMeans(int k, double[][] data)
 	{
-		this(k, data, distance, null);
+		this(k, data, null);
 	}
 
-	public KMeans(int k, double[][] data, double[][] distance, int[] initialAssignment)
+	public KMeans(int k, double[][] data, int[] initialAssignment)
 	{
 		this.K = k;
-		this.distance = distance;
 
 		int n = data.length;
 		int d = data[0].length;
@@ -100,7 +97,7 @@ public class KMeans
 					count[member - 1]++;
 					for (int v = 0; v < d; v++)
 					{
-						if (data[j][v] > KMeans.NO_VALUE)
+						if (data[j][v] != NO_VALUE)
 							mu[member - 1][v] += data[j][v];
 					}
 				}
@@ -113,29 +110,36 @@ public class KMeans
 			}
 
 			//System.out.println(MathUtils.showMatrix(mu));
-			// dist(1:n,i)=sum((X-ones(n, 1)*mu(i,:)).^2,2);
-			// argmin
-			// [Y,I]=min(dist,[],2);
-			// e=n-sum(C==I); C=I;
+
 			e = 0;
 			for (int j = 0; j < n; j++)
 			{
+				//System.out.println(MathUtils.showVector(cAssignment));
+
 				for (int i = 0; i < K; i++)
 				{
-					dist[i] = 0.;
+					dist[i] = IGNORE_DISTANCE;
+
 					for (int v = 0; v < d; v++)
 					{
-						if (data[j][v] > KMeans.NO_VALUE)
+						if (data[j][v] != NO_VALUE && (cAssignment[v] - 1 == i))
+						{
+							if (dist[i] == IGNORE_DISTANCE)
+								dist[i] = 0.;
+
 							dist[i] += (data[j][v] - mu[i][v]) * (data[j][v] - mu[i][v]);
+						}
 					}
 				}
 
+				//System.out.println(MathUtils.showVector(dist));
+
 				// min
 				int cluster = 1;
-				double min = dist[cluster - 1];
-				for (int i = 1; i < K; i++)
+				double min = getMax(dist);
+				for (int i = 0; i < K; i++)
 				{
-					if (dist[i] < min)
+					if (dist[i] != IGNORE_DISTANCE && dist[i] <= min)
 					{
 						cluster = i + 1;
 						min = dist[i];
@@ -149,8 +153,24 @@ public class KMeans
 			}
 
 			iter++;
+
+			if (iter % 20 == 0)
+			{
+				System.out.println("Iterated " + iter + " times.");
+			}
 		}
 
 		System.out.println("Iterated " + iter + " times.");
+	}
+
+	private double getMax(double[] vector)
+	{
+		double max = 0;
+
+		for (int i = 0; i < vector.length; i++)
+			if (vector[i] > max)
+				max = vector[i];
+
+		return max;
 	}
 }
