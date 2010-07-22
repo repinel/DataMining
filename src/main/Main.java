@@ -150,7 +150,7 @@ public class Main
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void recomendationCheck(int[][] evaluations, int[][] postEval, int[] cAssignment) throws IOException
 	{
 		BufferedWriter out = new BufferedWriter(new FileWriter("data/recomendation.out"));
@@ -267,8 +267,6 @@ public class Main
 			{
 				if (cAssignment[j] == cluster)
 				{
-					//out.write("i: " + i + " j: " + j + " itemId: " + ITEM_IDS[j] + " avalSize[i]: " + avaliacoes[i].length + "\n");
-
 					if (evaluations[j][itemIds[i]] != KMeans.NO_VALUE)
 					{
 						// mean
@@ -295,13 +293,13 @@ public class Main
 
 			guessError[i] = itemRatting[i] - itemGuessMean[i];
 
+			if (guessError[i] < 0)
+				guessError[i] *= -1;
 
 			// error statistics
 			recomendationCount++;
-			
-			if (guessError[i] >= -1 && guessError[i] <= 1)
+			if (guessError[i] <= 1)
 				recomendationErrorCount++;
-
 
 			StringBuffer sb = new StringBuffer();
 
