@@ -11,7 +11,7 @@ import java.text.NumberFormat;
 import main.cluster.KMeans;
 import main.math.MathUtils;
 
-public class Main
+public class KMeansMain
 {
 	//private static final String FILE_NAME = "data/data.base";
 	//private static final String FILE_NAME = "data/simulacao_teste.base";
