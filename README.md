@@ -1,2 +1,4 @@
-DataMining
+KMeans
 ==========
+
+The KMeans algorithm.
